@@ -62,7 +62,7 @@
     </select>
 
     <label>¿Eres cliente de Repsol?</label>
-    <select id="esCliente" onchange="mostrarOpciones()">
+    <select id="esCliente" onchange="mostrarOpciones()" required>
       <option value="">Selecciona una opción</option>
       <option value="sí">Sí</option>
       <option value="no">No</option>
@@ -70,8 +70,8 @@
 
     <div id="opcionesCliente" style="display:none;">
       <label>Motivo:</label>
-      <select id="motivoCliente" onchange="toggleOtro()">
-        <option>Selecciona un motivo</option>
+      <select id="motivoCliente" onchange="toggleOtro()" required>
+        <option value="">Selecciona un motivo</option>
         <option>Cambio de titular</option>
         <option>Cambio de tarifa</option>
         <option>Duplicado de factura</option>
@@ -81,8 +81,8 @@
 
     <div id="opcionesNoCliente" style="display:none;">
       <label>Motivo:</label>
-      <select id="motivoNoCliente" onchange="toggleOtro()">
-        <option>Selecciona un motivo</option>
+      <select id="motivoNoCliente" onchange="toggleOtro()" required>
+        <option value="">Selecciona un motivo</option>
         <option>Quiero cambiarme a Repsol</option>
         <option>Información sobre tarifas</option>
         <option>Otro</option>
@@ -100,23 +100,21 @@
       const esCliente = document.getElementById("esCliente").value;
       document.getElementById("opcionesCliente").style.display = esCliente === "sí" ? "block" : "none";
       document.getElementById("opcionesNoCliente").style.display = esCliente === "no" ? "block" : "none";
-      document.getElementById("detalleOtro").style.display = "none";
     }
 
     function toggleOtro() {
       const cliente = document.getElementById("esCliente").value;
-      const motivo = cliente === "sí" ? document.getElementById("motivoCliente").value : document.getElementById("motivoNoCliente").value;
+      const motivo = cliente === "sí"
+        ? document.getElementById("motivoCliente").value
+        : document.getElementById("motivoNoCliente").value;
       document.getElementById("detalleOtro").style.display = motivo === "Otro" ? "block" : "none";
     }
 
-    document.getElementById("fecha").addEventListener("change", function () {
-      const fecha = new Date(this.value);
+    function esFinDeSemana(fechaStr) {
+      const fecha = new Date(fechaStr);
       const dia = fecha.getDay();
-      if (dia === 0 || dia === 6) {
-        this.value = "";
-        alert("❌ No se puede reservar en sábado o domingo.");
-      }
-    });
+      return dia === 0 || dia === 6; // domingo o sábado
+    }
 
     function enviarReserva() {
       const nombre = document.getElementById("nombre").value.trim();
@@ -125,13 +123,18 @@
       const fecha = document.getElementById("fecha").value;
       const hora = document.getElementById("hora").value;
       const clienteRepsol = document.getElementById("esCliente").value;
-      const motivo = clienteRepsol === 'sí' 
-        ? document.getElementById("motivoCliente").value 
+      const motivo = clienteRepsol === "sí"
+        ? document.getElementById("motivoCliente").value
         : document.getElementById("motivoNoCliente").value;
       const detalle = document.getElementById("detalleOtro").value.trim();
 
-      if (!nombre || !telefono || !fecha || !hora || !clienteRepsol || !motivo || (motivo === "Otro" && !detalle)) {
+      if (!nombre || !telefono || !fecha || !hora || !clienteRepsol || !motivo) {
         document.getElementById("mensaje-reserva").textContent = "❌ Por favor, completa todos los campos obligatorios.";
+        return;
+      }
+
+      if (esFinDeSemana(fecha)) {
+        document.getElementById("mensaje-reserva").textContent = "❌ No se puede reservar en sábado ni domingo.";
         return;
       }
 
@@ -146,14 +149,22 @@
         detalle
       };
 
-      google.script.run
-        .withSuccessHandler(() => {
+      fetch("https://script.google.com/macros/s/AKfycbzB6IU0ftK-poNzqpRs80LkEvfh6a6QXVlPD-BjJlPSfnHzcbN3FQzmpYx25tg1O8ccIA/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
           document.getElementById("mensaje-reserva").textContent = "✅ ¡Reserva enviada con éxito!";
-        })
-        .withFailureHandler(err => {
-          document.getElementById("mensaje-reserva").textContent = "❌ Error: " + err.message;
-        })
-        .guardarReserva(datos);
+        } else {
+          document.getElementById("mensaje-reserva").textContent = "❌ Error: " + res.error;
+        }
+      })
+      .catch(err => {
+        document.getElementById("mensaje-reserva").textContent = "❌ Error de red: " + err.message;
+      });
     }
   </script>
 </body>
