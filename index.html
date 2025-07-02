@@ -149,11 +149,12 @@
         detalle
       };
 
-      fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      })
+      fetch("https://proxy-reservas.vercel.app/", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(datos),
+})
+
       .then(res => res.json())
       .then(res => {
         if (res.success) {
