@@ -62,7 +62,7 @@
     </select>
 
     <label>¿Eres cliente de Repsol?</label>
-    <select id="esCliente" onchange="mostrarOpciones()" required>
+    <select id="esCliente" required onchange="mostrarOpciones()">
       <option value="">Selecciona una opción</option>
       <option value="sí">Sí</option>
       <option value="no">No</option>
@@ -96,6 +96,8 @@
   </div>
 
   <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbzB6IU0ftK-poNzqpRs80LkEvfh6a6QXVlPD-BjJlPSfnHzcbN3FQzmpYx25tg1O8ccIA/exec";
+
     function mostrarOpciones() {
       const esCliente = document.getElementById("esCliente").value;
       document.getElementById("opcionesCliente").style.display = esCliente === "sí" ? "block" : "none";
@@ -104,15 +106,12 @@
 
     function toggleOtro() {
       const cliente = document.getElementById("esCliente").value;
-      const motivo = cliente === "sí"
-        ? document.getElementById("motivoCliente").value
-        : document.getElementById("motivoNoCliente").value;
+      const motivo = cliente === "sí" ? document.getElementById("motivoCliente").value : document.getElementById("motivoNoCliente").value;
       document.getElementById("detalleOtro").style.display = motivo === "Otro" ? "block" : "none";
     }
 
     function esFinDeSemana(fechaStr) {
-      const fecha = new Date(fechaStr);
-      const dia = fecha.getDay();
+      const dia = new Date(fechaStr).getDay();
       return dia === 0 || dia === 6; // domingo o sábado
     }
 
@@ -128,13 +127,14 @@
         : document.getElementById("motivoNoCliente").value;
       const detalle = document.getElementById("detalleOtro").value.trim();
 
+      // Validación básica
       if (!nombre || !telefono || !fecha || !hora || !clienteRepsol || !motivo) {
-        document.getElementById("mensaje-reserva").textContent = "❌ Por favor, completa todos los campos obligatorios.";
+        document.getElementById("mensaje-reserva").textContent = "❌ Por favor, rellena todos los campos obligatorios.";
         return;
       }
 
       if (esFinDeSemana(fecha)) {
-        document.getElementById("mensaje-reserva").textContent = "❌ No se puede reservar en sábado ni domingo.";
+        document.getElementById("mensaje-reserva").textContent = "❌ Solo se puede reservar de lunes a viernes.";
         return;
       }
 
@@ -149,7 +149,7 @@
         detalle
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbzB6IU0ftK-poNzqpRs80LkEvfh6a6QXVlPD-BjJlPSfnHzcbN3FQzmpYx25tg1O8ccIA/exec", {
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
