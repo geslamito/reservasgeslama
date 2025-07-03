@@ -45,7 +45,7 @@
   <div id="reserva-cita">
     <h2>Reserva tu cita en oficina</h2>
 
-    <input type="text" id="nombre" placeholder="Tu nombre completo" required />
+    <input type="text" id="nombre" placeholder="Tu nombre" required />
     <input type="tel" id="telefono" placeholder="Teléfono de contacto" required />
     <input type="email" id="correo" placeholder="Correo electrónico (opcional)" />
 
@@ -149,7 +149,7 @@
 
       const datos = { nombre, telefono, correo, fecha, hora, clienteRepsol, motivo, detalle };
 
-      fetch("https://TU-PROYECTO.vercel.app/api/reservar", {
+      fetch("https://reserva-api.vercel.app/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
