@@ -3,43 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <title>Reserva de Cita</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-    }
-    #reserva-cita {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    h2 {
-      color: #f97316;
-      margin-bottom: 0.5em;
-    }
-    input, select, button {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #f97316;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
-    #mensaje-reserva {
-      font-weight: bold;
-      margin-top: 12px;
-    }
-  </style>
+ <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f9f9f9;
+    padding: 20px;
+    color: #333;
+  }
+
+  #reserva-cita {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  h2 {
+    color: #f97316;
+    font-size: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+  }
+
+  input, select {
+    width: 100%;
+    margin: 8px 0 16px;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    width: 100%;
+    background: #f97316;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 0;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background: #ea6b0d;
+  }
+
+  #mensaje-reserva {
+    font-weight: bold;
+    margin-top: 12px;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
   <div id="reserva-cita">
