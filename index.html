@@ -106,9 +106,6 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://kjfgxhkdmwfxnayrchdk.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqZmd4aGtkbXdmeG5heXJjaGRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1MzE4NzQsImV4cCI6MjA2NzEwNzg3NH0.EAiFHzlREfnr686MlQwrCCXFcP35-We-DVoZaqSMOJc';
-
     function mostrarOpciones() {
       const esCliente = document.getElementById("esCliente").value;
       document.getElementById("opcionesCliente").style.display = esCliente === "sí" ? "block" : "none";
@@ -125,10 +122,10 @@
 
     function esFinDeSemana(fechaStr) {
       const dia = new Date(fechaStr).getDay();
-      return dia === 0 || dia === 6;
+      return dia === 0 || dia === 6; // Domingo o sábado
     }
 
-    async function enviarReserva() {
+    function enviarReserva() {
       const nombre = document.getElementById("nombre").value.trim();
       const telefono = document.getElementById("telefono").value.trim();
       const correo = document.getElementById("correo").value.trim();
@@ -150,27 +147,24 @@
         return;
       }
 
-      try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/reservas`, {
-          method: 'POST',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify({ nombre, telefono, correo, fecha, hora, clienteRepsol, motivo, detalle })
-        });
+      const datos = { nombre, telefono, correo, fecha, hora, clienteRepsol, motivo, detalle };
 
-        if (response.ok) {
+      fetch("https://TU-PROYECTO.vercel.app/api/reservar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
           document.getElementById("mensaje-reserva").textContent = "✅ ¡Reserva enviada con éxito!";
         } else {
-          const error = await response.json();
-          document.getElementById("mensaje-reserva").textContent = "❌ Error: " + (error.message || response.statusText);
+          document.getElementById("mensaje-reserva").textContent = "❌ Error: " + res.error;
         }
-      } catch (err) {
-        document.getElementById("mensaje-reserva").textContent = "❌ Error inesperado: " + err.message;
-      }
+      })
+      .catch(err => {
+        document.getElementById("mensaje-reserva").textContent = "❌ Error de red: " + err.message;
+      });
     }
   </script>
 </body>
