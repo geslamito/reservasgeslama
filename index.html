@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbzwvFKjX1Dy6Ig5vnlaceyfWnGqVAgkqn81vm5A_xC9CKcWzQqb6ZuvZa9jLwyfr3nd3Q/exec" />
-    <title>Redirigiendo a formulario de reservas...</title>
-  </head>
-  <body>
-    <p>Redirigiendo a formulario de reservas...</p>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Reservas</title>
+  <script>
+    // Redirección suave con fallback
+    window.onload = function () {
+      // Redirige tras 100ms para que el navegador procese el DOM antes
+      setTimeout(() => {
+        window.location.href = "https://script.google.com/macros/s/AKfycbzwvFKjX1Dy6Ig5vnlaceyfWnGqVAgkqn81vm5A_xC9CKcWzQqb6ZuvZa9jLwyfr3nd3Q/exec";
+      }, 100);
+    };
+  </script>
+</head>
+<body>
+  <p>Redirigiendo al formulario de reservas...</p>
+  <p>Si no se redirige automáticamente, <a href="https://script.google.com/macros/s/AKfycbzwvFKjX1Dy6Ig5vnlaceyfWnGqVAgkqn81vm5A_xC9CKcWzQqb6ZuvZa9jLwyfr3nd3Q/exec">haz clic aquí</a>.</p>
+</body>
 </html>
