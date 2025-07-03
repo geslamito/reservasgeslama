@@ -3,68 +3,48 @@
 <head>
   <meta charset="UTF-8" />
   <title>Reserva de Cita</title>
- <style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #ffffff;
-    padding: 20px;
-    color: #333;
-  }
-
-  #reserva-cita {
-    max-width: 600px;
-    margin: auto;
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  h2 {
-    color: #FF5E1A;
-    font-size: 24px;
-    margin-bottom: 16px;
-    text-align: center;
-  }
-
-  label {
-    font-weight: 600;
-    margin-top: 12px;
-    display: block;
-  }
-
-  input, select {
-    width: 100%;
-    margin: 8px 0 16px;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    width: 100%;
-    background: #FF5E1A;
-    color: #FFFFFF;
-    font-weight: bold;
-    border: none;
-    border-radius: 999px;
-    padding: 14px 0;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-
-  button:hover {
-    background: #ea6b0d;
-  }
-
-  #mensaje-reserva {
-    font-weight: bold;
-    margin-top: 12px;
-    text-align: center;
-  }
-</style>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #ffffff;
+      padding: 20px;
+    }
+    #reserva-cita {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #FF5E1A;
+      margin-bottom: 0.5em;
+    }
+    input, select, button {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #FF5E1A;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #FF5E1A;
+    }
+    #mensaje-reserva {
+      font-weight: bold;
+      margin-top: 12px;
+    }
+  </style>
 </head>
 <body>
   <div id="reserva-cita">
@@ -74,26 +54,12 @@
     <input type="tel" id="telefono" placeholder="Teléfono de contacto" required />
     <input type="email" id="correo" placeholder="Correo electrónico (opcional)" />
 
-    <label>Elija la fecha para su cita:</label>
+    <label>Elija la fecha:</label>
     <input type="date" id="fecha" required />
 
     <label>Elija la hora:</label>
     <select id="hora" required>
       <option value="">Selecciona una hora</option>
-      <option>09:00</option>
-      <option>09:30</option>
-      <option>10:00</option>
-      <option>10:30</option>
-      <option>11:00</option>
-      <option>11:30</option>
-      <option>12:00</option>
-      <option>12:30</option>
-      <option>13:00</option>
-      <option>13:30</option>
-      <option>14:00</option>
-      <option>14:30</option>
-      <option>15:00</option>
-      <option>15:30</option>
     </select>
 
     <label>¿Eres cliente de Repsol?</label>
@@ -131,6 +97,56 @@
   </div>
 
   <script>
+    const todasLasHoras = [
+      "09:00", "09:30", "10:00", "10:30",
+      "11:00", "11:30", "12:00", "12:30",
+      "13:00", "13:30", "14:00", "14:30",
+      "15:00", "15:30"
+    ];
+
+    document.getElementById("fecha").addEventListener("change", actualizarHoras);
+
+    function actualizarHoras() {
+      const fecha = document.getElementById("fecha").value;
+      const selectHora = document.getElementById("hora");
+      selectHora.innerHTML = '<option value="">Cargando disponibilidad...</option>';
+
+      if (!fecha) return;
+
+      fetch("https://reserva-api.vercel.app/api/disponible", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fecha })
+      })
+      .then(res => res.json())
+      .then(res => {
+        selectHora.innerHTML = '<option value="">Selecciona una hora</option>';
+        if (res.success) {
+          const disponibles = todasLasHoras.filter(h => !res.horasReservadas.includes(h));
+          disponibles.forEach(hora => {
+            const opt = document.createElement("option");
+            opt.value = hora;
+            opt.textContent = hora;
+            selectHora.appendChild(opt);
+          });
+
+          if (disponibles.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "Sin horas disponibles";
+            opt.disabled = true;
+            selectHora.appendChild(opt);
+          }
+        } else {
+          document.getElementById("mensaje-reserva").textContent = "❌ Error al cargar disponibilidad.";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("mensaje-reserva").textContent = "❌ Error de red al consultar disponibilidad.";
+      });
+    }
+
     function mostrarOpciones() {
       const esCliente = document.getElementById("esCliente").value;
       document.getElementById("opcionesCliente").style.display = esCliente === "sí" ? "block" : "none";
@@ -147,7 +163,7 @@
 
     function esFinDeSemana(fechaStr) {
       const dia = new Date(fechaStr).getDay();
-      return dia === 0 || dia === 6; // Domingo o sábado
+      return dia === 0 || dia === 6;
     }
 
     function enviarReserva() {
@@ -175,10 +191,10 @@
       const datos = { nombre, telefono, correo, fecha, hora, clienteRepsol, motivo, detalle };
 
       fetch("https://reserva-api.vercel.app/api/reserva", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(datos)
-})
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      })
       .then(res => res.json())
       .then(res => {
         if (res.success) {
