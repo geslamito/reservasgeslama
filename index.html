@@ -149,7 +149,7 @@
 
       const datos = { nombre, telefono, correo, fecha, hora, clienteRepsol, motivo, detalle };
 
-      fetch("https://reserva-api.vercel.app/api/reservar", {
+      fetch("https://reserva-api.vercel.app/api/reserva", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(datos)
